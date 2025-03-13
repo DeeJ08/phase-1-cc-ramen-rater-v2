@@ -1,12 +1,16 @@
 // index.js
-const menuImages = document.querySelectorAll('#ramen-menu img');
-menuImages.forEach(image => {
-  image.addEventListener('click', (event) => {
-    const ramenId = event.target.dataset.id;
-    const ramen = testResponseData.find(r => r.id === ramenId);
-    handleClick(ramen);
+const testResponseData = [];
+
+const addImageEventListeners = () => {
+  const menuImages = document.querySelectorAll('#ramen-menu img');
+  menuImages.forEach(image => {
+    image.addEventListener('click', (event) => {
+      const ramenId = event.target.dataset.id;
+      const ramen = testResponseData.find(r => r.id === ramenId);
+      handleClick(ramen);
+    });
   });
-});
+};
 
 // Callbacks
 const handleClick = (ramen) => {
@@ -52,26 +56,20 @@ const addSubmitListener = () => {
 
     const newImage = document.createElement('img');
     newImage.src = newRamen.image;
+    newImage.alt = newRamen.name;
+    newImage.dataset.id = testResponseData.length.toString();
+    testResponseData.push(newRamen);
+
     ramen.appendChild(newImage);
     getForm.reset();
 
+
+
     newImage.addEventListener('click', (event) => {
-      const newDetailImg = document.querySelector("#ramen-detail > .detail-image");
-      const newDetailName = document.querySelector("#ramen-detail > .name");
-      const newDetailRestaurant = document.querySelector("#ramen-detail > .restaurant");
-      const newDetailsRating = document.getElementById("rating-display");
-      const newDetailsComment = document.getElementById("comment-display");
-
-      newDetailImg.src = newRamen.image;
-      newDetailName.textContent = newRamen.name;
-      newDetailRestaurant.textContent = newRamen.restaurant;
-      newDetailsRating.textContent = newRamen.rating;
-      newDetailsComment.textContent = newRamen.comment;
-    })
-
-  })
-
-}
+      handleClick(newRamen);
+    });
+  });
+};
 
 const displayRamens = async () => {
   try {
@@ -83,8 +81,11 @@ const displayRamens = async () => {
       const ramenImg = document.createElement('img');
       ramenImg.src = ramen.image;
       ramenImg.alt = ramen.name;
+      ramenImg.dataset.id = ramen.id;
       ramenMenu.appendChild(ramenImg);
     });
+    data.forEach(ramen => testResponseData.push(ramen));
+    addImageEventListeners();
   }
   catch (error) {
     console.error('Error fetching data:', error);
